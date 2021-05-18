@@ -2,6 +2,7 @@ package com.udacity.graphql.query;
 
 import com.coxautodev.graphql.tools.GraphQLResolver;
 import com.udacity.graphql.entity.Dog;
+import com.udacity.graphql.exception.DogNotFoundException;
 import com.udacity.graphql.repository.DogRepository;
 import org.springframework.stereotype.Component;
 
@@ -14,14 +15,21 @@ public class Query implements GraphQLResolver {
     public Query(DogRepository dogRepository){
         this.dogRepository=dogRepository;
     }
-    private List<String> findDogBreeds(){
-        return dogRepository.findAllBreed();
+    public Iterable<Dog> findDogBreeds(){
+        return dogRepository.findAll();
     }
-    private Optional<Dog> findDogBreedById(Long id){
-        return dogRepository.findById(id);
+    public Dog findDogBreedById(Long id){
+        Optional<Dog> optionalDog= dogRepository.findById(id);
+        if(optionalDog.isPresent()){
+            return optionalDog.get();
+        }
+        else
+        {
+            throw new DogNotFoundException("Dog not found",id);
+        }
     }
-    private List<String>findAllDogNames(){
-        return dogRepository.findAllDogNames();
-    }
+//    private List<String>findAllDogNames(){
+//        return dogRepository.findAllDogNames();
+//    }
 
 }
